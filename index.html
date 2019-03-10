@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Telegram charts demo</title>
+        <script src="src/tgChart.js"></script>
+        <script src="src/tgLegend.js"></script>
+        <script src="src/tgSeries.js"></script>
+    </head>
+    <body>
+        <tg-chart chartWidth="500" chartHeight="500"></tg-chart>
+        <script>
+            let data = [
+                [1, 2, 3, 4, 5, 6, 7, 8, 9, 8, 7, 6, 5, 4, 3, 2, 1],
+                [9, 8, 7, 6, 5, 4, 3, 2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+            ];
+            document.querySelector('tg-chart').chartdata = data;
+        </script>
+    </body>
+</html>
