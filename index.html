@@ -4,17 +4,34 @@
         <meta charset="UTF-8">
         <title>Telegram charts demo</title>
         <script src="src/tgChart.js"></script>
+        <script src="src/tgLayerBase.js"></script>
         <script src="src/tgLegend.js"></script>
         <script src="src/tgSeries.js"></script>
+        <style>
+            #container {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+        </style>
     </head>
     <body>
-        <tg-chart chartWidth="500" chartHeight="500"></tg-chart>
+        <div id="container"></div>
         <script>
-            let data = [
-                [1, 2, 3, 4, 5, 6, 7, 8, 9, 8, 7, 6, 5, 4, 3, 2, 1],
-                [9, 8, 7, 6, 5, 4, 3, 2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-            ];
-            document.querySelector('tg-chart').chartdata = data;
+            let request = new XMLHttpRequest();
+            let data;
+            request.open('GET', './chart_data.json');
+            request.addEventListener('load', (response) => {
+                data = JSON.parse(request.responseText);
+                data.forEach(dataEntry => {
+                    let chart = document.createElement('tg-chart');
+                    chart.setAttribute('chartHeight', 500);
+                    chart.setAttribute('chartWidth', 500);
+                    container.append(chart);
+                    chart.chartdata = dataEntry;
+                });
+            });
+            request.send();
         </script>
     </body>
 </html>

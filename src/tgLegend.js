@@ -1,14 +1,33 @@
-class TgLegend {
+class TgLegend extends TgLayerBase {
     constructor(parent, series) {
-        this._chart = parent;
+        super(parent);
         this._series = series;
-        this._theme = parent.theme;
+    }
 
-        this._canvasNode = document.createElement('canvas');
-        this._canvasNode.classList.add('legend');
-        this._canvasNode.classList.add('layer');
-        parent.shadowRoot.appendChild(this._canvasNode);
-        this._ctx = this._canvasNode.getContext('2d');
+    onMouseMove(coords) {
+        if (!this._legendItems || !this._legendItems.length) {
+            return;
+        }
+        this.isOnItem = -1;
+        for (let i = 0; i < this._legendItems.length; i++) {
+            let item = this._legendItems[i];
+            if (coords.x > item.x && coords.x < item.x + item.width) {
+                if (coords.y > item.y && coords.y < item.y + item.height) {
+                    this.isOnItem = i;
+                    this._chart.style.cursor = 'pointer';
+                }
+            }
+        }
+        if (this.isOnItem === -1) {
+            this._chart.style.cursor = '';
+        }
+    }
+
+    onClick(coords) {
+        if (this.isOnItem !== -1) {
+            this._series[this.isOnItem].enabled = !this._series[this.isOnItem].enabled;
+            this.redraw();
+        }
     }
 
     set series(value) {
@@ -27,24 +46,47 @@ class TgLegend {
             width += this._theme.legend.elementMarkRadius * 2;
             this._legendItems.push({
                 x: x,
-                y: this._chart.plotArea.x + this._chart.plotArea.h - this._theme.legend.elementHeight,
+                y: this._chart.plotArea.x + this._chart.plotArea.h - this._theme.legend.elementHeight - this._theme.legend.elementSpacing,
                 height: this._theme.legend.elementHeight,
-                width: width
+                width: width,
+                name: name,
             });
             x += width + this._theme.legend.elementSpacing;
         });
-        this._chart.plotArea.h -= (this._theme.legend.elementHeight + this._theme.legend.elementSpacing);
+        this._chart.plotArea.h -= (this._theme.legend.elementHeight + this._theme.legend.elementSpacing * 2);
     }
 
     redraw() {
+        this._ctx.clearRect(0, 0, 9999, 9999);
         let height = this._theme.legend.elementHeight;
         let radius = height / 2;
-        this.ctx.strokeStyle = this._theme.secondaryColor;
-        this.ctx.lineWidth = this._theme.legend.elementBorder;
-        let shift = (this.ctx.lineWidth % 2) * .5;
+        this._ctx.lineWidth = this._theme.legend.elementBorder;
+        let shift = (this._ctx.lineWidth % 2) * .5;
         for (let i = 0; i < this._legendItems.length; i++) {
+            this._ctx.strokeStyle = this._theme.secondaryColor;
             let item = this._legendItems[i];
-            this._ctx.fillStyle = this._theme.colors[i];
+            this._ctx.fillStyle = this._theme.colors[i % this._theme.colors.length];
+            this._ctx.beginPath();
+            this._ctx.moveTo(item.x + radius, item.y + shift);
+            this._ctx.lineTo(item.x + item.width - radius, item.y + shift);
+            this._ctx.arc(item.x + item.width - radius, item.y + radius, radius, -Math.PI / 2, Math.PI / 2);
+            this._ctx.lineTo(item.x + radius, item.y + item.height - shift);
+            this._ctx.arc(item.x + radius, item.y + radius, radius, Math.PI / 2, -Math.PI / 2);
+            this._ctx.closePath();
+            this._ctx.stroke();
+
+            this._ctx.strokeStyle = this._theme.colors[i % this._theme.colors.length];
+            this._ctx.beginPath();
+            this._ctx.arc(item.x + radius, item.y + radius, radius - this._theme.legend.elementPadding, 0, Math.PI * 2);
+            this._ctx.closePath();
+            this._ctx.stroke();
+            if (this._series[i].enabled) {
+                this._ctx.fill();
+            }
+
+            this._ctx.textAlign = 'left';
+            this._ctx.textBaseline = 'middle';
+            this._ctx.fillText(item.name, item.x + this._theme.legend.elementMarkRadius * 2 + this._theme.legend.elementPadding * 2, item.y + radius);
         }
     }
 }
