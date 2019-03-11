@@ -34,11 +34,34 @@ class TgScale extends TgLayerBase {
             let scaleMove = deltaX / this._scaleWidth;
             if (this._frameHover) {
                 this._chart.scaleStart = this._initialScaleStart + scaleMove;
-                if (this._chart.scaleStart < 0) {
+                if (this._chart.scaleStart <= 0) {
                     this._chart.scaleStart = 0;
                 }
-                if (this._chart.scaleStart + this._chart.scale > 1) {
+                if (this._chart.scaleStart + this._chart.scale >= 1) {
                     this._chart.scaleStart = 1 - this._chart.scale;
+                }
+            }
+            if (this._leftHandleHover) {
+                this._chart.scaleStart = this._initialScaleStart + scaleMove;
+                this._chart.scale = this._initialScale - scaleMove;
+                if (this._chart.scaleStart <= 0) {
+                    let diff = this._chart.scaleStart;
+                    this._chart.scaleStart = 0;
+                    this._chart.scale += diff;
+                }
+                if (this._chart.scale < .1) {
+                    let diff = .1 - this._chart.scale;
+                    this._chart.scale = .1;
+                    this._chart.scaleStart -= diff;
+                }
+            }
+            if (this._rightHandleHover) {
+                this._chart.scale = this._initialScale + scaleMove;
+                if (this._chart.scaleStart + this._chart.scale >= 1) {
+                    this._chart.scale = 1 - this._chart.scaleStart;
+                }
+                if (this._chart.scale < .1) {
+                    this._chart.scale = .1;
                 }
             }
             this._chart.recalc();

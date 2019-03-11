@@ -36,6 +36,8 @@ class TgChart extends HTMLElement {
         this.shadowRoot.appendChild(this._styleNode);
         this._legend = new TgLegend(this);
         this._scale = new TgScale(this);
+        this._bindedOnMove = this.onMouseMove.bind(this);
+        this._bindedOnUp = this.onMouseUp.bind(this);
         this.addEventListener('mousemove', this.onMouseMove);
         this.addEventListener('mousedown', this.onMouseDown);
         this.addEventListener('mouseup', this.onMouseUp);
@@ -60,12 +62,18 @@ class TgChart extends HTMLElement {
         let coords = this._calcMouseCoords(e);
         this._legend.onMouseDown(coords);
         this._scale.onMouseDown(coords);
+        document.captureEvents(Event.MOUSEMOVE);
+        document.addEventListener('mousemove', this._bindedOnMove);
+        document.addEventListener('mouseup', this._bindedOnUp);
     }
 
     onMouseUp(e) {
         let coords = this._calcMouseCoords(e);
         this._legend.onMouseUp(coords);
         this._scale.onMouseUp(coords);
+        document.removeEventListener('mousemove', this._bindedOnMove);
+        document.removeEventListener('mouseup', this._bindedOnUp);
+        document.releaseEvents();
     }
 
     onClick(e) {
