@@ -4,7 +4,6 @@ class TgLayerBase {
         this._theme = parent.theme;
 
         this._canvasNode = document.createElement('canvas');
-        this._canvasNode.classList.add('legend');
         this._canvasNode.classList.add('layer');
         parent.shadowRoot.appendChild(this._canvasNode);
         this._ctx = this._canvasNode.getContext('2d');
@@ -22,6 +21,14 @@ class TgLayerBase {
     }
 
     onMouseMove(coords) {
+
+    }
+
+    onMouseDown(coords) {
+
+    }
+
+    onMouseUp(coords) {
 
     }
 

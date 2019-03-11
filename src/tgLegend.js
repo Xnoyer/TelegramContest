@@ -1,6 +1,7 @@
 class TgLegend extends TgLayerBase {
     constructor(parent, series) {
         super(parent);
+        this._canvasNode.classList.add('legend');
         this._series = series;
     }
 
@@ -26,7 +27,8 @@ class TgLegend extends TgLayerBase {
     onClick(coords) {
         if (this.isOnItem !== -1) {
             this._series[this.isOnItem].enabled = !this._series[this.isOnItem].enabled;
-            this.redraw();
+            this._chart.recalc();
+            this._chart.redraw();
         }
     }
 
@@ -36,7 +38,7 @@ class TgLegend extends TgLayerBase {
 
     recalc() {
         this._legendItems = [];
-        let x = 0;
+        let x = this._chart.plotArea.x + this._theme.legend.elementSpacing;
         this._ctx.font = '22px Roboto';
         this._series.forEach(series => {
             let name = series.name;
@@ -46,7 +48,7 @@ class TgLegend extends TgLayerBase {
             width += this._theme.legend.elementMarkRadius * 2;
             this._legendItems.push({
                 x: x,
-                y: this._chart.plotArea.x + this._chart.plotArea.h - this._theme.legend.elementHeight - this._theme.legend.elementSpacing,
+                y: this._chart.plotArea.y + this._chart.plotArea.h - this._theme.legend.elementHeight - this._theme.legend.elementSpacing,
                 height: this._theme.legend.elementHeight,
                 width: width,
                 name: name,
