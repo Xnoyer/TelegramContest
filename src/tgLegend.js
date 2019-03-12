@@ -38,7 +38,7 @@ class TgLegend extends TgLayerBase {
 
     recalc() {
         this._legendItems = [];
-        let x = this._chart.plotArea.x + this._theme.legend.elementSpacing;
+        let x = this._chart.plotArea.x + this._theme.spacing;
         this._ctx.font = '22px Roboto';
         this._series.forEach(series => {
             let name = series.name;
@@ -48,14 +48,14 @@ class TgLegend extends TgLayerBase {
             width += this._theme.legend.elementMarkRadius * 2;
             this._legendItems.push({
                 x: x,
-                y: this._chart.plotArea.y + this._chart.plotArea.h - this._theme.legend.elementHeight - this._theme.legend.elementSpacing,
+                y: this._chart.plotArea.y + this._chart.plotArea.h - this._theme.legend.elementHeight - this._theme.spacing,
                 height: this._theme.legend.elementHeight,
                 width: width,
                 name: name,
             });
             x += width + this._theme.legend.elementSpacing;
         });
-        this._chart.plotArea.h -= (this._theme.legend.elementHeight + this._theme.legend.elementSpacing * 2);
+        this._chart.plotArea.h -= (this._theme.legend.elementHeight + this._theme.spacing * 2);
     }
 
     redraw() {

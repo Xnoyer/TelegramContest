@@ -15,6 +15,7 @@ class TgChart extends HTMLElement {
         this.theme = {
             colors: ['#3CC23F', '#F34C44'],
             secondaryColor: '#E6ECF0',
+            spacing: 20,
             legend: {
                 elementHeight: 50,
                 elementBorder: 2,
@@ -24,9 +25,8 @@ class TgChart extends HTMLElement {
             },
             scale: {
                 height: 50,
-                hoverColor: 'rgba(0,0,0,.05)',
+                hoverColor: 'rgba(230,230,230,.6)',
                 frameColor: 'rgba(0,0,0,.10)',
-                spacing: 20,
             }
         };
         this.scaleStart = .4;
@@ -36,6 +36,7 @@ class TgChart extends HTMLElement {
         this.shadowRoot.appendChild(this._styleNode);
         this._legend = new TgLegend(this);
         this._scale = new TgScale(this);
+        this._xAxis = new TgXAxis(this);
         this._bindedOnMove = this.onMouseMove.bind(this);
         this._bindedOnUp = this.onMouseUp.bind(this);
         this.addEventListener('mousemove', this.onMouseMove);
@@ -134,9 +135,9 @@ class TgChart extends HTMLElement {
         for (let name in this.seriesData) {
             this._series.push(new TgSeries(this, this.seriesData[name], name));
         }
-        this.seriesBounds = this._calcSeriesBounds();
         this._legend.series = this._series;
         this._scale.series = this._series;
+        this._xAxis.categories = this.categories;
     }
 
     recalc() {
@@ -144,8 +145,10 @@ class TgChart extends HTMLElement {
             return;
         }
         this._resetDimensions();
+        this.seriesBounds = this._calcSeriesBounds();
         this._legend.recalc();
         this._scale.recalc();
+        this._xAxis.recalc();
     }
 
     redraw() {
@@ -154,12 +157,16 @@ class TgChart extends HTMLElement {
         }
         this._legend.redraw();
         this._scale.redraw();
+        this._xAxis.redraw();
     }
 
     _calcSeriesBounds() {
         let min = Infinity;
         let max = -Infinity;
         this._series.forEach(series => {
+            if (!series.enabled) {
+                return;
+            }
             series.data.forEach(point => {
                 min = Math.min(min, point);
                 max = Math.max(max, point);
@@ -171,6 +178,7 @@ class TgChart extends HTMLElement {
     _resetDimensions() {
         this._legend.setSize(this._width, this._height);
         this._scale.setSize(this._width, this._height);
+        this._xAxis.setSize(this._width, this._height);
         if (this._series && this._series.length) {
             this._series.forEach(series => {
                 series.setSize(this._width, this._height)

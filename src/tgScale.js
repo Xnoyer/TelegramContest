@@ -72,9 +72,9 @@ class TgScale extends TgLayerBase {
     recalc() {
         let height = this._theme.scale.height;
         this._seriesCoords = [];
-        this._scaleX = this._chart.plotArea.x + this._theme.scale.spacing;
+        this._scaleX = this._chart.plotArea.x + this._theme.spacing;
         this._scaleY = this._chart.plotArea.x + this._chart.plotArea.h - height;
-        this._scaleWidth = this._chart.plotArea.w - this._theme.scale.spacing * 2;
+        this._scaleWidth = this._chart.plotArea.w - this._theme.spacing * 2;
         let connectorWidth = this._scaleWidth / (this._chart.categories.length - 1);
         let dataDistance = this._chart.seriesBounds.max - this._chart.seriesBounds.min;
         this._series.forEach(series => {
@@ -92,7 +92,7 @@ class TgScale extends TgLayerBase {
         this._leftHoverWidth = Math.ceil(this._scaleWidth * this._chart.scaleStart);
         this._rightHoverWidth = Math.floor(this._scaleWidth - this._framePart - this._leftHoverWidth);
 
-        this._chart.plotArea.h -= (this._theme.scale.height + this._theme.scale.spacing);
+        this._chart.plotArea.h -= (this._theme.scale.height + this._theme.spacing);
     }
 
     redraw() {
