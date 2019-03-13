@@ -14,6 +14,7 @@ class TgChart extends HTMLElement {
         super();
         this.theme = {
             colors: ['#3CC23F', '#F34C44'],
+            primaryColor: '#96A2AA',
             secondaryColor: '#E6ECF0',
             spacing: 20,
             legend: {
@@ -37,6 +38,7 @@ class TgChart extends HTMLElement {
         this._legend = new TgLegend(this);
         this._scale = new TgScale(this);
         this._xAxis = new TgXAxis(this);
+        this._yAxis = new TgYAxis(this);
         this._bindedOnMove = this.onMouseMove.bind(this);
         this._bindedOnUp = this.onMouseUp.bind(this);
         this.addEventListener('mousemove', this.onMouseMove);
@@ -138,6 +140,7 @@ class TgChart extends HTMLElement {
         this._legend.series = this._series;
         this._scale.series = this._series;
         this._xAxis.categories = this.categories;
+        this._xAxis.series = this._series;
     }
 
     recalc() {
@@ -149,6 +152,7 @@ class TgChart extends HTMLElement {
         this._legend.recalc();
         this._scale.recalc();
         this._xAxis.recalc();
+        this._yAxis.recalc();
     }
 
     redraw() {
@@ -158,6 +162,7 @@ class TgChart extends HTMLElement {
         this._legend.redraw();
         this._scale.redraw();
         this._xAxis.redraw();
+        this._yAxis.redraw();
     }
 
     _calcSeriesBounds() {
@@ -179,6 +184,7 @@ class TgChart extends HTMLElement {
         this._legend.setSize(this._width, this._height);
         this._scale.setSize(this._width, this._height);
         this._xAxis.setSize(this._width, this._height);
+        this._yAxis.setSize(this._width, this._height);
         if (this._series && this._series.length) {
             this._series.forEach(series => {
                 series.setSize(this._width, this._height)

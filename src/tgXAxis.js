@@ -4,6 +4,7 @@ class TgXAxis extends TgLayerBase {
         this._monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         this._canvasNode.classList.add('x-axis');
         this._fontSize = 16;
+        this._labelHeight = this._fontSize * 2;
         this._labelWidths = [];
         this._labelWidthsSum = 0;
         this._labels = [];
@@ -25,7 +26,7 @@ class TgXAxis extends TgLayerBase {
     }
 
     recalc() {
-        this._labelY = this._chart.plotArea.y + this._chart.plotArea.h - this._fontSize * 1.5 / 2;
+        this._labelY = this._chart.plotArea.y + this._chart.plotArea.h - this._labelHeight / 2;
         let realWidth = this._chart.plotArea.w - this._chart.plotArea.x - this._chart.theme.spacing * 2;
         let scaledWidth = realWidth / this._chart.scale;
         let labelX = -scaledWidth * this._chart.scaleStart + this._chart.theme.spacing + this._avgLabelWidth / 2;
@@ -45,11 +46,12 @@ class TgXAxis extends TgLayerBase {
             labelX += distanceForLabel;
         }
 
-        this._chart.plotArea.h -= this._fontSize * 1.5;
+        this._chart.plotArea.h -= this._labelHeight;
     }
 
     redraw() {
-        this._ctx.font = `${this._fontSize}px Roboto`;
+        this._ctx.font = `${this._fontSize}px Roboto, Arial, sans-serif`;
+        this._ctx.fillStyle = this._chart.theme.primaryColor;
         this._labels.forEach(label => {
             if (label.draw) {
                 label.render();
@@ -57,7 +59,7 @@ class TgXAxis extends TgLayerBase {
         });
         this._ctx.strokeStyle = this._chart.theme.secondaryColor;
         this._ctx.lineWidth = 1;
-        let y = this._labelY - this._fontSize * 1.5 / 2;
+        let y = this._labelY - this._labelHeight / 2;
         if (y % 1 === 0) {
             y += .5;
         }

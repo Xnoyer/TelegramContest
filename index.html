@@ -10,6 +10,7 @@
         <script src="src/tgScale.js"></script>
         <script src="src/tgSeries.js"></script>
         <script src="src/tgXAxis.js"></script>
+        <script src="src/tgYAxis.js"></script>
         <style>
             #container {
                 display: flex;
@@ -33,7 +34,7 @@
                 data.forEach(dataEntry => {
                     let chart = document.createElement('tg-chart');
                     chart.setAttribute('chartHeight', 500);
-                    chart.setAttribute('chartWidth', 500);
+                    chart.setAttribute('chartWidth', 800);
                     container.append(chart);
                     chart.chartdata = dataEntry;
                 });

@@ -12,6 +12,9 @@ class TgLabel {
     }
 
     render() {
+        if (!this.draw) {
+            return;
+        }
         this._ctx.textAlign = 'center';
         this._ctx.textBaseline = 'middle';
         this._ctx.fillText(this._text, this.x, this.y);
