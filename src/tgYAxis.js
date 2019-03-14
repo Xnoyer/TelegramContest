@@ -16,10 +16,38 @@ class TgYAxis extends TgLayerBase {
         });
     }
 
+    getCoordFromData(dataValue) {
+        let top = this._chart.theme.spacing + this._labelHeight;
+        let start = this.dataPoints[0];
+        let intervals = (dataValue - start) / this._dataInterval;
+        return top + this._height - intervals * this._intervalHeight;
+    }
+
+    _calculateVisibleBounds() {
+        let intervalsLength = this._chart.categories.length - 1;
+        let startPoint = Math.ceil(intervalsLength * this._chart.scaleStart);
+        let endPoint = Math.floor(intervalsLength * (this._chart.scaleStart + this._chart.scale));
+        let min = Infinity;
+        let max = -Infinity;
+        this._chart.series.forEach(series => {
+            if (!series.enabled) {
+                return;
+            }
+            let point;
+            for (let i = startPoint; i <= endPoint; i++) {
+                point = series.data[i];
+                min = Math.min(min, point);
+                max = Math.max(max, point);
+            }
+        });
+        return {min: min, max: max};
+    }
+
     recalc() {
+        let bounds = this._calculateVisibleBounds();
         this._ctx.font = `${this._fontSize}px Roboto`;
         let dataAnchors = [10, 5, 2.5, 1];
-        let dataInterval = this._chart.seriesBounds.max - this._chart.seriesBounds.min;
+        let dataInterval = bounds.max - bounds.min;
         let rawDataTick = dataInterval / this._numOfIntervals;
         let powOf10 = Math.round(rawDataTick).toString().length - 1;
         let powered = Math.pow(10, powOf10);
@@ -35,15 +63,16 @@ class TgYAxis extends TgLayerBase {
         }
         this.dataPoints = [];
         let point;
-        if (this._chart.seriesBounds.min > 0) {
-            point = Math.floor(this._chart.seriesBounds.min / fittingAnchor) * fittingAnchor;
+        if (bounds.min > 0) {
+            point = Math.floor(bounds.min / fittingAnchor) * fittingAnchor;
         } else {
-            point = Math.ceil(this._chart.seriesBounds.min / fittingAnchor) * fittingAnchor;
+            point = Math.ceil(bounds.min / fittingAnchor) * fittingAnchor;
         }
         for (let i = 0; i <= this._numOfIntervals; i++) {
             this.dataPoints.push(point);
             point += fittingAnchor;
         }
+        this._dataInterval = fittingAnchor;
         this._height = this._chart.plotArea.h - this._chart.plotArea.y - this._chart.theme.spacing - this._labelHeight;
         this._intervalHeight = Math.floor(this._height / this._numOfIntervals);
         this.points = [];
@@ -53,11 +82,13 @@ class TgYAxis extends TgLayerBase {
             let label;
             if (!this._labels[this.dataPoints[i]]) {
                 label = new TgLabel(this._ctx, this.dataPoints[i]);
-                label.recalc();
                 this._labels[this.dataPoints[i]] = label;
-                label.x = this._chart.plotArea.x + this._chart.theme.spacing + label.width / 2;
-                label.y = pointY + this._chart.theme.spacing + this._labelHeight - this._labelHeight / 2;
+            } else {
+                label = this._labels[this.dataPoints[i]];
             }
+            label.recalc();
+            label.x = this._chart.plotArea.x + this._chart.theme.spacing + label.width / 2;
+            label.y = pointY + this._chart.theme.spacing + this._labelHeight - this._labelHeight / 2;
             pointY -= this._intervalHeight;
         }
     }

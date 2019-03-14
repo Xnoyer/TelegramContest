@@ -10,6 +10,23 @@ class TgChart extends HTMLElement {
         this.redraw();
     }
 
+    get yAxis() {
+        return this._yAxis;
+    }
+
+    get xAxis() {
+        return this._xAxis;
+    }
+
+    get series() {
+        return this._series;
+    }
+
+    getColorForSeries(series) {
+        let index = this._series.indexOf(series);
+        return this.theme.colors[index % this.theme.colors.length];
+    }
+
     constructor() {
         super();
         this.theme = {
@@ -153,6 +170,9 @@ class TgChart extends HTMLElement {
         this._scale.recalc();
         this._xAxis.recalc();
         this._yAxis.recalc();
+        this._series.forEach(series => {
+            series.recalc();
+        });
     }
 
     redraw() {
@@ -163,6 +183,9 @@ class TgChart extends HTMLElement {
         this._scale.redraw();
         this._xAxis.redraw();
         this._yAxis.redraw();
+        this._series.forEach(series => {
+            series.redraw();
+        });
     }
 
     _calcSeriesBounds() {

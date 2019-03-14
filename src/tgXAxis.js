@@ -15,7 +15,7 @@ class TgXAxis extends TgLayerBase {
         this._ctx.font = `${this._fontSize}px Roboto`;
         this._categories.forEach(category => {
             let date = new Date(category);
-            let name = date.getDay() + ' ' + this._monthNames[date.getMonth()];
+            let name = (date.getDay() + 1) + ' ' + this._monthNames[date.getMonth()];
             let label = new TgLabel(this._ctx, name);
             this._labels.push(label);
             label.recalc();
@@ -23,6 +23,10 @@ class TgXAxis extends TgLayerBase {
             this._labelWidthsSum += label.width;
         });
         this._avgLabelWidth = this._labelWidthsSum / this._labels.length;
+    }
+
+    getCoordForPoint(point) {
+        return this.points[point];
     }
 
     recalc() {
@@ -35,7 +39,7 @@ class TgXAxis extends TgLayerBase {
         this.points = [];
         for (let i = 0; i < this._labels.length; i++) {
             this._labels[i].draw = true;
-            this.points.push(labelX);
+            this.points.push(labelX - this._avgLabelWidth / 2);
             if (i % showEach > 0 || labelX < 0 || labelX > this._chart.theme.spacing + realWidth) {
                 this._labels[i].draw = false;
                 labelX += distanceForLabel;
