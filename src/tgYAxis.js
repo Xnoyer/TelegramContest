@@ -25,8 +25,9 @@ class TgYAxis extends TgLayerBase {
 
     _calculateVisibleBounds() {
         let intervalsLength = this._chart.categories.length - 1;
-        let startPoint = Math.ceil(intervalsLength * this._chart.scaleStart);
-        let endPoint = Math.floor(intervalsLength * (this._chart.scaleStart + this._chart.scale));
+        // Taking by 1 point out of the border since we're drawing lines to it.
+        let startPoint = Math.floor(intervalsLength * this._chart.scaleStart);
+        let endPoint = Math.ceil(intervalsLength * (this._chart.scaleStart + this._chart.scale));
         let min = Infinity;
         let max = -Infinity;
         this._chart.series.forEach(series => {
@@ -43,10 +44,23 @@ class TgYAxis extends TgLayerBase {
         return {min: min, max: max};
     }
 
+    onAnimationFrame(fromLast) {
+        if (!this._labels) {
+            return false;
+        }
+        let hasChanges = false;
+        for (let i = 0; i < this.points.length; i++) {
+            let labelHasChanges = this._labels[this.dataPoints[i]].onAnimationFrame(fromLast);
+            hasChanges = hasChanges || labelHasChanges;
+        }
+        this.redraw();
+        return hasChanges;
+    }
+
     recalc() {
         let bounds = this._calculateVisibleBounds();
         this._ctx.font = `${this._fontSize}px Roboto`;
-        let dataAnchors = [10, 5, 2.5, 1];
+        let dataAnchors = [10, 9, 8, 7.5, 6, 5, 4, 3, 2.5, 1];
         let dataInterval = bounds.max - bounds.min;
         let rawDataTick = dataInterval / this._numOfIntervals;
         let powOf10 = Math.round(rawDataTick).toString().length - 1;
@@ -86,6 +100,7 @@ class TgYAxis extends TgLayerBase {
             } else {
                 label = this._labels[this.dataPoints[i]];
             }
+            label.draw = true;
             label.recalc();
             label.x = this._chart.plotArea.x + this._chart.theme.spacing + label.width / 2;
             label.y = pointY + this._chart.theme.spacing + this._labelHeight - this._labelHeight / 2;
@@ -94,6 +109,7 @@ class TgYAxis extends TgLayerBase {
     }
 
     redraw() {
+        this._ctx.clearRect(0, 0, 9999, 9999);
         this._ctx.font = `${this._fontSize}px Roboto, Arial, sans-serif`;
         this._ctx.fillStyle = this._chart.theme.primaryColor;
         this._ctx.strokeStyle = this._chart.theme.secondaryColor;
@@ -102,7 +118,7 @@ class TgYAxis extends TgLayerBase {
             this._ctx.moveTo(this._chart.plotArea.x + this._chart.theme.spacing, this._chart.theme.spacing + this._labelHeight + this.points[i] + .5);
             this._ctx.lineTo(this._chart.plotArea.x + this._chart.plotArea.w - this._chart.theme.spacing, this._chart.theme.spacing + this._labelHeight + this.points[i] + .5);
             this._ctx.stroke();
-            this._labels[this.dataPoints[i]].render();
+            this._labels[this.dataPoints[i]].redraw();
         }
     }
 }

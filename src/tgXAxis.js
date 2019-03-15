@@ -25,6 +25,19 @@ class TgXAxis extends TgLayerBase {
         this._avgLabelWidth = this._labelWidthsSum / this._labels.length;
     }
 
+    onAnimationFrame(fromLast) {
+        if (!this._labels) {
+            return false;
+        }
+        let hasChanges = false;
+        this._labels.forEach(label => {
+            let labelHasChanges = label.onAnimationFrame(fromLast);
+            hasChanges = hasChanges || labelHasChanges;
+        });
+        this.redraw();
+        return hasChanges;
+    }
+
     getCoordForPoint(point) {
         return this.points[point];
     }
@@ -38,15 +51,16 @@ class TgXAxis extends TgLayerBase {
         let showEach = Math.round(this._labelWidthsSum * 2 / scaledWidth) || 1;
         this.points = [];
         for (let i = 0; i < this._labels.length; i++) {
-            this._labels[i].draw = true;
             this.points.push(labelX - this._avgLabelWidth / 2);
-            if (i % showEach > 0 || labelX < 0 || labelX > this._chart.theme.spacing + realWidth) {
-                this._labels[i].draw = false;
-                labelX += distanceForLabel;
-                continue;
-            }
             this._labels[i].x = labelX;
             this._labels[i].y = this._labelY;
+            if (i % showEach > 0 || labelX < 0 || labelX > this._chart.theme.spacing + realWidth) {
+                this._labels[i].draw = false;
+            } else {
+                if (!this._labels[i].draw) {
+                    this._labels[i].draw = true;
+                }
+            }
             labelX += distanceForLabel;
         }
 
@@ -54,11 +68,12 @@ class TgXAxis extends TgLayerBase {
     }
 
     redraw() {
+        this._ctx.clearRect(0, 0, 9999, 9999);
         this._ctx.font = `${this._fontSize}px Roboto, Arial, sans-serif`;
         this._ctx.fillStyle = this._chart.theme.primaryColor;
         this._labels.forEach(label => {
             if (label.draw) {
-                label.render();
+                label.redraw();
             }
         });
         this._ctx.strokeStyle = this._chart.theme.secondaryColor;

@@ -22,6 +22,30 @@ class TgChart extends HTMLElement {
         return this._series;
     }
 
+    _onWindowAnimationFrame() {
+        this._animationStopped = false;
+        let fromLast = Date.now() - this._animPrevTime;
+        this._hasAnimationChanges = false;
+        if (this._xAxis.onAnimationFrame(fromLast)) {
+            this._hasAnimationChanges = true;
+        }
+        if (this._yAxis.onAnimationFrame(fromLast)) {
+            this._hasAnimationChanges = true;
+        }
+        let seriesHasChanges = false;
+        this._series.forEach(series => {
+            let certainSeriesHasChanges = series.onAnimationFrame(fromLast);
+            seriesHasChanges = seriesHasChanges || certainSeriesHasChanges;
+        });
+        this._hasAnimationChanges = this._hasAnimationChanges || seriesHasChanges;
+        this._animPrevTime = Date.now();
+        if (this._hasAnimationChanges) {
+            window.requestAnimationFrame(this._bindedOnAnimationFrame);
+        } else {
+            this._animationStopped = true;
+        }
+    }
+
     getColorForSeries(series) {
         let index = this._series.indexOf(series);
         return this.theme.colors[index % this.theme.colors.length];
@@ -58,10 +82,13 @@ class TgChart extends HTMLElement {
         this._yAxis = new TgYAxis(this);
         this._bindedOnMove = this.onMouseMove.bind(this);
         this._bindedOnUp = this.onMouseUp.bind(this);
+        this._bindedOnAnimationFrame = this._onWindowAnimationFrame.bind(this);
         this.addEventListener('mousemove', this.onMouseMove);
         this.addEventListener('mousedown', this.onMouseDown);
         this.addEventListener('mouseup', this.onMouseUp);
         this.addEventListener('click', this.onClick);
+        this._animationStopped = true;
+        this._startAnimation();
     }
 
     _calcMouseCoords(event) {
@@ -160,6 +187,13 @@ class TgChart extends HTMLElement {
         this._xAxis.series = this._series;
     }
 
+    _startAnimation() {
+        if (this._animationStopped) {
+            this._animPrevTime = Date.now();
+            window.requestAnimationFrame(this._bindedOnAnimationFrame);
+        }
+    }
+
     recalc() {
         if (!this._data) {
             return;
@@ -186,6 +220,7 @@ class TgChart extends HTMLElement {
         this._series.forEach(series => {
             series.redraw();
         });
+        this._startAnimation();
     }
 
     _calcSeriesBounds() {

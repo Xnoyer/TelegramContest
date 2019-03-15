@@ -11,6 +11,8 @@ class TgLayerBase {
         this._canvasNode.height = parent.height;
         this._canvasNode.style.height = parent.width + 'px';
         this._canvasNode.style.height = parent.height + 'px';
+        this._animDuration = 200;
+        this._animationProgress = 1;
     }
 
     setSize(width, height) {
@@ -33,6 +35,10 @@ class TgLayerBase {
     }
 
     onClick(coords) {
+
+    }
+
+    onAnimationFrame(fromLast) {
 
     }
 }
