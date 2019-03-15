@@ -60,15 +60,14 @@ class TgYAxis extends TgLayerBase {
     recalc() {
         let bounds = this._calculateVisibleBounds();
         this._ctx.font = `${this._fontSize}px Roboto`;
-        let dataAnchors = [10, 9, 8, 7.5, 6, 5, 4, 3, 2.5, 1];
         let dataInterval = bounds.max - bounds.min;
         let rawDataTick = dataInterval / this._numOfIntervals;
         let powOf10 = Math.round(rawDataTick).toString().length - 1;
         let powered = Math.pow(10, powOf10);
         let minAnchorDiff = Infinity;
         let fittingAnchor;
-        for (let i = 0; i < dataAnchors.length; i++) {
-            let anchor = dataAnchors[i] * powered;
+        for (let i = 1; i <= 10; i += .5) {
+            let anchor = i * powered;
             let diff = anchor - rawDataTick;
             if (diff >= 0 && diff < minAnchorDiff) {
                 minAnchorDiff = diff;

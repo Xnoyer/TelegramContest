@@ -71,8 +71,8 @@ class TgChart extends HTMLElement {
                 frameColor: 'rgba(0,0,0,.10)',
             }
         };
-        this.scaleStart = .4;
-        this.scale = .4;
+        this.scaleStart = 0;
+        this.scale = .19;
         this.attachShadow({mode: 'open'});
         this._styleNode = document.createElement('style');
         this.shadowRoot.appendChild(this._styleNode);
