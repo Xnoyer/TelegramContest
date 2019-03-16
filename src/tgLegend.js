@@ -84,8 +84,15 @@ class TgLegend extends TgLayerBase {
             this._ctx.stroke();
             if (this._series[i].enabled) {
                 this._ctx.fill();
+                this._ctx.lineWidth = 3;
+                this._ctx.strokeStyle = '#FFFFFF';
+                this._ctx.beginPath();
+                this._ctx.moveTo(item.x + radius - 7, item.y + radius);
+                this._ctx.lineTo(item.x + radius - 2, item.y + radius + 5);
+                this._ctx.lineTo(item.x + radius + 8, item.y + radius - 5);
+                this._ctx.stroke();
             }
-
+            this._ctx.fillStyle = '#000000';
             this._ctx.textAlign = 'left';
             this._ctx.textBaseline = 'middle';
             this._ctx.fillText(item.name, item.x + this._theme.legend.elementMarkRadius * 2 + this._theme.legend.elementPadding * 2, item.y + radius);
