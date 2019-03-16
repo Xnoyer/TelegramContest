@@ -39,6 +39,6 @@ class TgLayerBase {
     }
 
     onAnimationFrame(fromLast) {
-
+        return false;
     }
 }

@@ -69,24 +69,53 @@ class TgScale extends TgLayerBase {
         }
     }
 
+    onAnimationFrame(fromLast) {
+        if (this._animationProgress < 1 && this._seriesCoords) {
+            this._animationProgress += fromLast / this._animDuration;
+            this._seriesCoords.forEach(seriesCoords => {
+                seriesCoords.forEach(point => {
+                    point.y = point.old_y + (point.new_y - point.old_y) * this._animationProgress;
+                });
+                this.redraw();
+            });
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     recalc() {
+        this._animationProgress = 0;
         let height = this._theme.scale.height;
-        this._seriesCoords = [];
         this._scaleX = this._chart.plotArea.x + this._theme.spacing;
         this._scaleY = this._chart.plotArea.x + this._chart.plotArea.h - height;
         this._scaleWidth = this._chart.plotArea.w - this._theme.spacing * 2;
         let connectorWidth = this._scaleWidth / (this._chart.categories.length - 1);
         let dataDistance = this._chart.seriesBounds.max - this._chart.seriesBounds.min;
-        this._series.forEach(series => {
-            let seriesCoords = [];
+        if (!this._seriesCoords) {
+            this._seriesCoords = [];
+        }
+        for (let i = 0; i < this._series.length; i++) {
+            let series = this._series[i];
+            if (!this._seriesCoords[i]) {
+                this._seriesCoords.push([]);
+            }
+            let seriesCoords = this._seriesCoords[i];
             let x = this._scaleX;
-            series.data.forEach(point => {
+            for (let dx = 0; dx < series.data.length; dx++) {
+                let point = series.data[dx];
                 let y = height - ((point - this._chart.seriesBounds.min) / dataDistance) * height;
-                seriesCoords.push({x: x, y: y + this._chart.plotArea.y + this._chart.plotArea.h - height});
+                if (!seriesCoords[dx]) {
+                    seriesCoords[dx] = {};
+                }
+                let coord = seriesCoords[dx];
+                coord.x = x;
+                coord.new_y = y + this._chart.plotArea.y + this._chart.plotArea.h - height;
+                coord.old_y = coord.y || coord.new_y;
+                coord.y = coord.old_y;
                 x += connectorWidth;
-            });
-            this._seriesCoords.push(seriesCoords);
-        });
+            }
+        }
 
         this._framePart = Math.floor(this._scaleWidth * this._chart.scale);
         this._leftHoverWidth = Math.ceil(this._scaleWidth * this._chart.scaleStart);
@@ -106,6 +135,9 @@ class TgScale extends TgLayerBase {
         this._ctx.fillRect(this._scaleX + this._leftHoverWidth, this._scaleY, this._framePart, this._chart.theme.scale.height);
         this._ctx.restore();
 
+        this._ctx.beginPath();
+        this._ctx.rect(this._scaleX, this._scaleY, this._scaleWidth, this._chart.theme.scale.height);
+        this._ctx.clip();
         this._ctx.lineWidth = 1;
         for (let i = 0; i < this._seriesCoords.length; i++) {
             if (!this._series[i].enabled) {

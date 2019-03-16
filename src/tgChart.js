@@ -26,6 +26,9 @@ class TgChart extends HTMLElement {
         this._animationStopped = false;
         let fromLast = Date.now() - this._animPrevTime;
         this._hasAnimationChanges = false;
+        if (this._scale.onAnimationFrame(fromLast)) {
+            this._hasAnimationChanges = true;
+        }
         if (this._xAxis.onAnimationFrame(fromLast)) {
             this._hasAnimationChanges = true;
         }
