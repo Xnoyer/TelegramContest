@@ -15,6 +15,9 @@ class TgSeries extends TgLayerBase {
     onAnimationFrame(fromLast) {
         if (this._animationProgress < 1 && this._points) {
             this._animationProgress += fromLast / this._animDuration;
+            if (this._animationProgress > 1) {
+                this._animationProgress = 1;
+            }
             this._points.forEach(point => {
                 point.y = point.old_y + (point.new_y - point.old_y) * this._animationProgress;
             });

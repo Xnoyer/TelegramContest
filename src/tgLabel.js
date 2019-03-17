@@ -28,6 +28,9 @@ class TgLabel {
     onAnimationFrame(fromLast) {
         if (this._animationProgress < 1 && this._draw) {
             this._animationProgress += fromLast / this._animDuration;
+            if (this._animationProgress > 1) {
+                this._animationProgress = 1;
+            }
             this._opacity = this._newDraw ? this._animationProgress : 1 - this._animationProgress;
             this._opacity = this._opacity > 1 ? 1 : (this._opacity < 0 ? 0 : this._opacity);
             return true;

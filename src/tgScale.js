@@ -72,6 +72,9 @@ class TgScale extends TgLayerBase {
     onAnimationFrame(fromLast) {
         if (this._animationProgress < 1 && this._seriesCoords) {
             this._animationProgress += fromLast / this._animDuration;
+            if (this._animationProgress > 1) {
+                this._animationProgress = 1;
+            }
             this._seriesCoords.forEach(seriesCoords => {
                 seriesCoords.forEach(point => {
                     point.y = point.old_y + (point.new_y - point.old_y) * this._animationProgress;
