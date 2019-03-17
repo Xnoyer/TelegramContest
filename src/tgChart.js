@@ -23,6 +23,9 @@ class TgChart extends HTMLElement {
     }
 
     _onWindowAnimationFrame() {
+        if (!this._tabIsActive) {
+            return;
+        }
         this._animationStopped = false;
         let fromLast = Date.now() - this._animPrevTime;
         this._hasAnimationChanges = false;
@@ -76,6 +79,7 @@ class TgChart extends HTMLElement {
         };
         this.scaleStart = 0;
         this.scale = .19;
+        this._tabIsActive = true;
         this.attachShadow({mode: 'open'});
         this._styleNode = document.createElement('style');
         this.shadowRoot.appendChild(this._styleNode);
@@ -86,10 +90,14 @@ class TgChart extends HTMLElement {
         this._bindedOnMove = this.onMouseMove.bind(this);
         this._bindedOnUp = this.onMouseUp.bind(this);
         this._bindedOnAnimationFrame = this._onWindowAnimationFrame.bind(this);
+        this._bindedOnWindowFocus = this._onWindowFocus.bind(this);
+        this._bindedOnWindowBlur = this._onWindowBlur.bind(this);
         this.addEventListener('mousemove', this.onMouseMove);
         this.addEventListener('mousedown', this.onMouseDown);
         this.addEventListener('mouseup', this.onMouseUp);
         this.addEventListener('click', this.onClick);
+        window.addEventListener('focus', this._bindedOnWindowFocus);
+        window.addEventListener('blur', this._bindedOnWindowBlur);
         this._animationStopped = true;
         this._startAnimation();
     }
@@ -130,6 +138,16 @@ class TgChart extends HTMLElement {
         let coords = this._calcMouseCoords(e);
         this._legend.onClick(coords);
         this._scale.onClick(coords);
+    }
+
+    _onWindowFocus() {
+        this._tabIsActive = true;
+        this._startAnimation();
+    }
+
+    _onWindowBlur() {
+        this._tabIsActive = false;
+        this._animationStopped = true;
     }
 
     connectedCallback() {

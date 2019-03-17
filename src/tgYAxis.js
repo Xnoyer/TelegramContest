@@ -41,7 +41,7 @@ class TgYAxis extends TgLayerBase {
                 max = Math.max(max, point);
             }
         });
-        return {min: min, max: max};
+        return {min: min === Infinity ? 0 : min, max: max == -Infinity ? 1 : max};
     }
 
     onAnimationFrame(fromLast) {
