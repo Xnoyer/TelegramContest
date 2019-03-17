@@ -36,8 +36,8 @@ class TgSeries extends TgLayerBase {
         for (let i = 0; i < this._data.length; i++) {
             if (this._points.length <= i) {
                 this._points.push({
-                    old_y: this._chart.plotArea.y + this._chart.plotArea.h - this._chart.theme.spacing,
-                    y: this._chart.plotArea.y + this._chart.plotArea.h - this._chart.theme.spacing,
+                    old_y: this._chart.plotArea.y + this._chart.plotArea.h - this._theme.spacing,
+                    y: this._chart.plotArea.y + this._chart.plotArea.h - this._theme.spacing,
                     new_y: this._chart.yAxis.getCoordFromData(this._data[i]),
                     x: this._chart.xAxis.getCoordForPoint(i),
                 });

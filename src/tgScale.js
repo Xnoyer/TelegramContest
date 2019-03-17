@@ -22,12 +22,18 @@ class TgScale extends TgLayerBase {
 
     onMouseMove(coords) {
         if (!this._mouseIsDown) {
-            if (coords.y >= this._scaleY && coords.y <= this._scaleY + this._chart.theme.scale.height) {
-                this._leftHandleHover = coords.x >= this._scaleX + this._leftHoverWidth && coords.x <= this._scaleX + this._leftHoverWidth + 10;
-                this._rightHandleHover = coords.x >= this._scaleX + this._leftHoverWidth + this._framePart - 10 && coords.x <= this._scaleX + this._leftHoverWidth + this._framePart;
-                this._frameHover = coords.x >= this._scaleX + this._leftHoverWidth + 10 && coords.x <= this._scaleX + this._leftHoverWidth + this._framePart - 10;
+            if (coords.y >= this._scaleY && coords.y <= this._scaleY + this._theme.scale.height) {
+                this._leftHandleHover =
+                    coords.x >= this._scaleX + this._leftHoverWidth && coords.x <= this._scaleX + this._leftHoverWidth +
+                    10;
+                this._rightHandleHover =
+                    coords.x >= this._scaleX + this._leftHoverWidth + this._framePart - 10 && coords.x <= this._scaleX +
+                    this._leftHoverWidth + this._framePart;
+                this._frameHover = coords.x >= this._scaleX + this._leftHoverWidth + 10 && coords.x <= this._scaleX +
+                    this._leftHoverWidth + this._framePart - 10;
 
-                this._chart.style.cursor = this._leftHandleHover || this._rightHandleHover ? 'ew-resize' : (this._frameHover ? 'move' : this._chart.style.cursor);
+                this._chart.style.cursor = this._leftHandleHover || this._rightHandleHover ? 'ew-resize' :
+                    (this._frameHover ? 'move' : this._chart.style.cursor);
             }
         } else {
             let deltaX = coords.x - this._downCoords.x;
@@ -128,25 +134,27 @@ class TgScale extends TgLayerBase {
     }
 
     redraw() {
+        let scaleTheme = this._theme.scale;
         this._ctx.clearRect(0, 0, 9999, 9999);
 
         this._ctx.save();
         this._ctx.fillStyle = '#000000';
-        this._ctx.fillRect(this._scaleX + this._leftHoverWidth + 10, this._scaleY + 2, this._framePart - 20, this._chart.theme.scale.height - 4);
+        this._ctx.fillRect(this._scaleX + this._leftHoverWidth + 10, this._scaleY + 2, this._framePart -
+            20, scaleTheme.height - 4);
         this._ctx.globalCompositeOperation = 'source-out';
-        this._ctx.fillStyle = this._chart.theme.scale.frameColor;
-        this._ctx.fillRect(this._scaleX + this._leftHoverWidth, this._scaleY, this._framePart, this._chart.theme.scale.height);
+        this._ctx.fillStyle = scaleTheme.frameColor;
+        this._ctx.fillRect(this._scaleX + this._leftHoverWidth, this._scaleY, this._framePart, scaleTheme.height);
         this._ctx.restore();
 
         this._ctx.beginPath();
-        this._ctx.rect(this._scaleX, this._scaleY, this._scaleWidth, this._chart.theme.scale.height);
+        this._ctx.rect(this._scaleX, this._scaleY, this._scaleWidth, scaleTheme.height);
         this._ctx.clip();
         this._ctx.lineWidth = 1;
         for (let i = 0; i < this._seriesCoords.length; i++) {
             if (!this._series[i].enabled) {
                 continue;
             }
-            this._ctx.strokeStyle = this._theme.colors[i % this._theme.colors.length];
+            this._ctx.strokeStyle = this._chart.getColorForIndex(i);
             let seriesPoints = this._seriesCoords[i];
             this._ctx.beginPath();
             for (let x = 0; x < seriesPoints.length; x++) {
@@ -159,8 +167,9 @@ class TgScale extends TgLayerBase {
             this._ctx.stroke();
         }
 
-        this._ctx.fillStyle = this._chart.theme.scale.hoverColor;
-        this._ctx.fillRect(this._scaleX, this._scaleY, this._leftHoverWidth, this._chart.theme.scale.height);
-        this._ctx.fillRect(this._scaleX + this._leftHoverWidth + this._framePart, this._scaleY, this._rightHoverWidth, this._chart.theme.scale.height);
+        this._ctx.fillStyle = scaleTheme.hoverColor;
+        this._ctx.fillRect(this._scaleX, this._scaleY, this._leftHoverWidth, scaleTheme.height);
+        this._ctx.fillRect(this._scaleX + this._leftHoverWidth + this._framePart, this._scaleY, this._rightHoverWidth,
+            scaleTheme.height);
     }
 }

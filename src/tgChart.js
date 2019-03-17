@@ -23,7 +23,7 @@ class TgChart extends HTMLElement {
     }
 
     _onWindowAnimationFrame() {
-        if (!this._tabIsActive) {
+        if (!this._tabIsActive || !this._data) {
             return;
         }
         this._animationStopped = false;
@@ -54,6 +54,10 @@ class TgChart extends HTMLElement {
 
     getColorForSeries(series) {
         let index = this._series.indexOf(series);
+        return this.getColorForIndex(index);
+    }
+
+    getColorForIndex(index) {
         return this.theme.colors[index % this.theme.colors.length];
     }
 

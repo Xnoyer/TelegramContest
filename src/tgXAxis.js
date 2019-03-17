@@ -44,9 +44,9 @@ class TgXAxis extends TgLayerBase {
 
     recalc() {
         this._labelY = this._chart.plotArea.y + this._chart.plotArea.h - this._labelHeight / 2;
-        let realWidth = this._chart.plotArea.w - this._chart.plotArea.x - this._chart.theme.spacing * 2;
+        let realWidth = this._chart.plotArea.w - this._chart.plotArea.x - this._theme.spacing * 2;
         let scaledWidth = realWidth / this._chart.scale;
-        let labelX = -scaledWidth * this._chart.scaleStart + this._chart.theme.spacing + this._avgLabelWidth / 2;
+        let labelX = -scaledWidth * this._chart.scaleStart + this._theme.spacing + this._avgLabelWidth / 2;
         let distanceForLabel = scaledWidth / (this._labels.length - 1);
         let showEach = Math.round(this._labelWidthsSum * 2 / scaledWidth) || 1;
         this.points = [];
@@ -54,7 +54,7 @@ class TgXAxis extends TgLayerBase {
             this.points.push(labelX - this._avgLabelWidth / 2);
             this._labels[i].x = labelX;
             this._labels[i].y = this._labelY;
-            if (i % showEach > 0 || labelX < 0 || labelX > this._chart.theme.spacing + realWidth) {
+            if (i % showEach > 0 || labelX < 0 || labelX > this._theme.spacing + realWidth) {
                 this._labels[i].draw = false;
             } else {
                 if (!this._labels[i].draw) {
@@ -70,21 +70,21 @@ class TgXAxis extends TgLayerBase {
     redraw() {
         this._ctx.clearRect(0, 0, 9999, 9999);
         this._ctx.font = `${this._fontSize}px Roboto, Arial, sans-serif`;
-        this._ctx.fillStyle = this._chart.theme.primaryColor;
+        this._ctx.fillStyle = this._theme.primaryColor;
         this._labels.forEach(label => {
             if (label.draw) {
                 label.redraw();
             }
         });
-        this._ctx.strokeStyle = this._chart.theme.secondaryColor;
+        this._ctx.strokeStyle = this._theme.secondaryColor;
         this._ctx.lineWidth = 1;
         let y = this._labelY - this._labelHeight / 2;
         if (y % 1 === 0) {
             y += .5;
         }
         this._ctx.beginPath();
-        this._ctx.moveTo(this._chart.plotArea.x + this._chart.theme.spacing, y);
-        this._ctx.lineTo(this._chart.plotArea.x + this._chart.plotArea.w - this._chart.theme.spacing, y);
+        this._ctx.moveTo(this._chart.plotArea.x + this._theme.spacing, y);
+        this._ctx.lineTo(this._chart.plotArea.x + this._chart.plotArea.w - this._theme.spacing, y);
         this._ctx.stroke();
     }
 }

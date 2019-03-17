@@ -37,37 +37,40 @@ class TgLegend extends TgLayerBase {
     }
 
     recalc() {
+        let plotArea = this._chart.plotArea;
+        let legendTheme = this._theme.legend;
         this._legendItems = [];
-        let x = this._chart.plotArea.x + this._theme.spacing;
+        let x = plotArea.x + this._theme.spacing;
         this._ctx.font = '22px Roboto';
         this._series.forEach(series => {
             let name = series.name;
             let width = 0;
             width += this._ctx.measureText(name).width;
-            width += this._theme.legend.elementPadding * 3;
-            width += this._theme.legend.elementMarkRadius * 2;
+            width += legendTheme.elementPadding * 3;
+            width += legendTheme.elementMarkRadius * 2;
             this._legendItems.push({
                 x: x,
-                y: this._chart.plotArea.y + this._chart.plotArea.h - this._theme.legend.elementHeight - this._theme.spacing,
-                height: this._theme.legend.elementHeight,
+                y: plotArea.y + plotArea.h - legendTheme.elementHeight - this._theme.spacing,
+                height: legendTheme.elementHeight,
                 width: width,
                 name: name,
             });
-            x += width + this._theme.legend.elementSpacing;
+            x += width + legendTheme.elementSpacing;
         });
-        this._chart.plotArea.h -= (this._theme.legend.elementHeight + this._theme.spacing * 2);
+        this._chart.plotArea.h -= (legendTheme.elementHeight + this._theme.spacing * 2);
     }
 
     redraw() {
         this._ctx.clearRect(0, 0, 9999, 9999);
-        let height = this._theme.legend.elementHeight;
+        let legendTheme = this._theme.legend;
+        let height = legendTheme.elementHeight;
         let radius = height / 2;
-        this._ctx.lineWidth = this._theme.legend.elementBorder;
+        this._ctx.lineWidth = legendTheme.elementBorder;
         let shift = (this._ctx.lineWidth % 2) * .5;
         for (let i = 0; i < this._legendItems.length; i++) {
             this._ctx.strokeStyle = this._theme.secondaryColor;
             let item = this._legendItems[i];
-            this._ctx.fillStyle = this._theme.colors[i % this._theme.colors.length];
+            this._ctx.fillStyle = this._chart.getColorForIndex(i);
             this._ctx.beginPath();
             this._ctx.moveTo(item.x + radius, item.y + shift);
             this._ctx.lineTo(item.x + item.width - radius, item.y + shift);
@@ -77,9 +80,9 @@ class TgLegend extends TgLayerBase {
             this._ctx.closePath();
             this._ctx.stroke();
 
-            this._ctx.strokeStyle = this._theme.colors[i % this._theme.colors.length];
+            this._ctx.strokeStyle = this._chart.getColorForIndex(i);
             this._ctx.beginPath();
-            this._ctx.arc(item.x + radius, item.y + radius, radius - this._theme.legend.elementPadding, 0, Math.PI * 2);
+            this._ctx.arc(item.x + radius, item.y + radius, radius - legendTheme.elementPadding, 0, Math.PI * 2);
             this._ctx.closePath();
             this._ctx.stroke();
             if (this._series[i].enabled) {
@@ -95,7 +98,8 @@ class TgLegend extends TgLayerBase {
             this._ctx.fillStyle = '#000000';
             this._ctx.textAlign = 'left';
             this._ctx.textBaseline = 'middle';
-            this._ctx.fillText(item.name, item.x + this._theme.legend.elementMarkRadius * 2 + this._theme.legend.elementPadding * 2, item.y + radius);
+            this._ctx.fillText(item.name, item.x + legendTheme.elementMarkRadius * 2 + legendTheme.elementPadding *
+                2, item.y + radius);
         }
     }
 }

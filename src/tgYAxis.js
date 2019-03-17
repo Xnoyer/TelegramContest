@@ -17,7 +17,7 @@ class TgYAxis extends TgLayerBase {
     }
 
     getCoordFromData(dataValue) {
-        let top = this._chart.theme.spacing + this._labelHeight;
+        let top = this._theme.spacing + this._labelHeight;
         let start = this.dataPoints[0];
         let intervals = (dataValue - start) / this._dataInterval;
         return top + this._height - intervals * this._intervalHeight;
@@ -41,7 +41,7 @@ class TgYAxis extends TgLayerBase {
                 max = Math.max(max, point);
             }
         });
-        return {min: min === Infinity ? 0 : min, max: max == -Infinity ? 1 : max};
+        return {min: min === Infinity ? 0 : min, max: max === -Infinity ? 1 : max};
     }
 
     onAnimationFrame(fromLast) {
@@ -86,7 +86,7 @@ class TgYAxis extends TgLayerBase {
             point += fittingAnchor;
         }
         this._dataInterval = fittingAnchor;
-        this._height = this._chart.plotArea.h - this._chart.plotArea.y - this._chart.theme.spacing - this._labelHeight;
+        this._height = this._chart.plotArea.h - this._chart.plotArea.y - this._theme.spacing - this._labelHeight;
         this._intervalHeight = Math.floor(this._height / this._numOfIntervals);
         this.points = [];
         let pointY = this._height;
@@ -101,8 +101,8 @@ class TgYAxis extends TgLayerBase {
             }
             label.draw = true;
             label.recalc();
-            label.x = this._chart.plotArea.x + this._chart.theme.spacing + label.width / 2;
-            label.y = pointY + this._chart.theme.spacing + this._labelHeight - this._labelHeight / 2;
+            label.x = this._chart.plotArea.x + this._theme.spacing + label.width / 2;
+            label.y = pointY + this._theme.spacing + this._labelHeight - this._labelHeight / 2;
             pointY -= this._intervalHeight;
         }
     }
@@ -110,12 +110,14 @@ class TgYAxis extends TgLayerBase {
     redraw() {
         this._ctx.clearRect(0, 0, 9999, 9999);
         this._ctx.font = `${this._fontSize}px Roboto, Arial, sans-serif`;
-        this._ctx.fillStyle = this._chart.theme.primaryColor;
-        this._ctx.strokeStyle = this._chart.theme.secondaryColor;
+        this._ctx.fillStyle = this._theme.primaryColor;
+        this._ctx.strokeStyle = this._theme.secondaryColor;
         this._ctx.lineHeight = 1;
         for (let i = 0; i < this.points.length; i++) {
-            this._ctx.moveTo(this._chart.plotArea.x + this._chart.theme.spacing, this._chart.theme.spacing + this._labelHeight + this.points[i] + .5);
-            this._ctx.lineTo(this._chart.plotArea.x + this._chart.plotArea.w - this._chart.theme.spacing, this._chart.theme.spacing + this._labelHeight + this.points[i] + .5);
+            this._ctx.moveTo(this._chart.plotArea.x + this._theme.spacing, this._theme.spacing + this._labelHeight +
+                this.points[i] + .5);
+            this._ctx.lineTo(this._chart.plotArea.x + this._chart.plotArea.w -
+                this._theme.spacing, this._theme.spacing + this._labelHeight + this.points[i] + .5);
             this._ctx.stroke();
             this._labels[this.dataPoints[i]].redraw();
         }
