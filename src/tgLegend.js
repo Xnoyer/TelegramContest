@@ -41,7 +41,7 @@ class TgLegend extends TgLayerBase {
         let legendTheme = this._theme.legend;
         this._legendItems = [];
         let x = plotArea.x + this._theme.spacing;
-        this._ctx.font = '22px Roboto';
+        this._ctx.font = '22px Roboto, Arial, sans-serif';
         this._series.forEach(series => {
             let name = series.name;
             let width = 0;
@@ -49,10 +49,10 @@ class TgLegend extends TgLayerBase {
             width += legendTheme.elementPadding * 3;
             width += legendTheme.elementMarkRadius * 2;
             this._legendItems.push({
-                x: x,
+                x: Math.round(x),
                 y: plotArea.y + plotArea.h - legendTheme.elementHeight - this._theme.spacing,
                 height: legendTheme.elementHeight,
-                width: width,
+                width: Math.round(width),
                 name: name,
             });
             x += width + legendTheme.elementSpacing;
@@ -65,9 +65,9 @@ class TgLegend extends TgLayerBase {
         let legendTheme = this._theme.legend;
         let height = legendTheme.elementHeight;
         let radius = height / 2;
-        this._ctx.lineWidth = legendTheme.elementBorder;
         let shift = (this._ctx.lineWidth % 2) * .5;
         for (let i = 0; i < this._legendItems.length; i++) {
+            this._ctx.lineWidth = legendTheme.elementBorder;
             this._ctx.strokeStyle = this._theme.secondaryColor;
             let item = this._legendItems[i];
             this._ctx.fillStyle = this._chart.getColorForIndex(i);
@@ -95,7 +95,7 @@ class TgLegend extends TgLayerBase {
                 this._ctx.lineTo(item.x + radius + 8, item.y + radius - 5);
                 this._ctx.stroke();
             }
-            this._ctx.fillStyle = '#000000';
+            this._ctx.fillStyle = this._theme.legend.textColor;
             this._ctx.textAlign = 'left';
             this._ctx.textBaseline = 'middle';
             this._ctx.fillText(item.name, item.x + legendTheme.elementMarkRadius * 2 + legendTheme.elementPadding *

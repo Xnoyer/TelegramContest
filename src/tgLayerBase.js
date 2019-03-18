@@ -15,11 +15,19 @@ class TgLayerBase {
         this._animationProgress = 1;
     }
 
+    set theme(value) {
+        this._theme = value;
+    }
+
     setSize(width, height) {
         this._canvasNode.width = width;
         this._canvasNode.height = height;
         this._canvasNode.style.height = width + 'px';
         this._canvasNode.style.height = height + 'px';
+    }
+
+    reAppend() {
+        this._chart.shadowRoot.appendChild(this._canvasNode);
     }
 
     onMouseMove(coords) {

@@ -59,7 +59,7 @@ class TgYAxis extends TgLayerBase {
 
     recalc() {
         let bounds = this._calculateVisibleBounds();
-        this._ctx.font = `${this._fontSize}px Roboto`;
+        this._ctx.font = `${this._fontSize}px Roboto, Arial, sans-serif`;
         let dataInterval = bounds.max - bounds.min;
         let rawDataTick = dataInterval / this._numOfIntervals;
         let powOf10 = Math.round(rawDataTick).toString().length - 1;

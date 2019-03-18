@@ -12,10 +12,10 @@ class TgXAxis extends TgLayerBase {
 
     set categories(categories) {
         this._categories = categories;
-        this._ctx.font = `${this._fontSize}px Roboto`;
+        this._ctx.font = `${this._fontSize}px Roboto, Arial, sans-serif`;
         this._categories.forEach(category => {
             let date = new Date(category);
-            let name = (date.getDay() + 1) + ' ' + this._monthNames[date.getMonth()];
+            let name = (date.getDate()) + ' ' + this._monthNames[date.getMonth()];
             let label = new TgLabel(this._ctx, name);
             this._labels.push(label);
             label.recalc();
@@ -36,6 +36,40 @@ class TgXAxis extends TgLayerBase {
         });
         this.redraw();
         return hasChanges;
+    }
+
+    onMouseMove(coords) {
+        if (!this.points) {
+            return false;
+        }
+        if (coords.x < this._theme.spacing || coords.x > this._chart.plotArea.x + this._chart.plotArea.w || coords.y <
+            this._theme.spacing || coords.y > this._chart.plotArea.y + this._chart.plotArea.h) {
+            if (this._hoveredPoint !== null) {
+                this._hoveredPoint = null;
+                this.redraw();
+                this._chart._onPointHovered(null);
+            }
+            return;
+        }
+        let leftmostPointIndex = Math.ceil(this.points.length * this._chart.scaleStart);
+        let leftMostPointX = this.points[leftmostPointIndex];
+        let closestInterval = Math.abs(leftMostPointX - coords.x);
+        let closestPointIndex;
+        while (true) {
+            leftmostPointIndex++;
+            leftMostPointX = this.points[leftmostPointIndex];
+            if (closestInterval > Math.abs(leftMostPointX - coords.x)) {
+                closestInterval = Math.abs(leftMostPointX - coords.x);
+            } else {
+                closestPointIndex = --leftmostPointIndex;
+                break;
+            }
+        }
+        if (this._hoveredPoint === null || this._hoveredPoint !== closestPointIndex) {
+            this._hoveredPoint = closestPointIndex;
+            this.redraw();
+            this._chart._onPointHovered(this._hoveredPoint);
+        }
     }
 
     getCoordForPoint(point) {
@@ -86,5 +120,13 @@ class TgXAxis extends TgLayerBase {
         this._ctx.moveTo(this._chart.plotArea.x + this._theme.spacing, y);
         this._ctx.lineTo(this._chart.plotArea.x + this._chart.plotArea.w - this._theme.spacing, y);
         this._ctx.stroke();
+
+        if (this._hoveredPoint !== null) {
+            this._ctx.lineWidth = 2;
+            this._ctx.beginPath();
+            this._ctx.moveTo(this.points[this._hoveredPoint] + .5, y);
+            this._ctx.lineTo(this.points[this._hoveredPoint] + .5, this._chart.plotArea.y);
+            this._ctx.stroke();
+        }
     }
 }

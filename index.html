@@ -11,15 +11,41 @@
         <script src="src/tgSeries.js"></script>
         <script src="src/tgXAxis.js"></script>
         <script src="src/tgYAxis.js"></script>
+        <script src="src/tgHoverLayer.js"></script>
         <style>
+            body {
+                font-family: Roboto, Arial, sans-serif;
+            }
+
             #container {
+                position: relative;
                 display: flex;
                 flex-direction: row;
                 flex-wrap: wrap;
             }
 
-            tg-chart {
+            .chart-container {
+                margin: 12px;
                 border: 1px solid;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .chart-button {
+                width: 80%;
+                margin: 24px 0 12px;
+                text-align: center;
+                background-color: cadetblue;
+                color: #FFFFFF;
+                text-transform: uppercase;
+                padding: 12px;
+                cursor: pointer;
+                user-select: none;
+            }
+
+            tg-chart {
+                flex: 1;
             }
         </style>
     </head>
@@ -31,15 +57,37 @@
             request.open('GET', './chart_data.json');
             request.addEventListener('load', (response) => {
                 data = JSON.parse(request.responseText);
-                data.forEach(dataEntry => {
+                data.forEach((dataEntry, index) => {
+                    let chartContainer = document.createElement('div');
+                    chartContainer.classList.add('chart-container');
+                    let chartButtonDiv = document.createElement('div');
+                    chartButtonDiv.classList.add('chart-button');
+                    chartButtonDiv.innerHTML = 'Switch theme';
+                    chartButtonDiv.setAttribute('data', index);
                     let chart = document.createElement('tg-chart');
                     chart.setAttribute('chartHeight', 500);
                     chart.setAttribute('chartWidth', 800);
-                    container.append(chart);
+                    chartContainer.appendChild(chart);
+                    chartContainer.appendChild(chartButtonDiv);
+                    container.appendChild(chartContainer);
                     chart.chartdata = dataEntry;
                 });
             });
             request.send();
+
+            container.addEventListener('click', onContainerClick);
+
+            function onContainerClick(event) {
+                if (!event.target.classList.contains('chart-button')) {
+                    return;
+                }
+
+                let index = event.target.getAttribute('data');
+                let chart = container.querySelectorAll('tg-chart')[index];
+                chart.themeIndex = Math.abs(chart.themeIndex - 1);
+                container.querySelectorAll('.chart-container')[index].style.backgroundColor =
+                    chart.themeIndex === 0 ? '' : '#242F3E';
+            }
         </script>
     </body>
 </html>
