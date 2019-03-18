@@ -52,11 +52,8 @@
     <body>
         <div id="container"></div>
         <script>
-            let request = new XMLHttpRequest();
-            let data;
-            request.open('GET', './chart_data.json');
-            request.addEventListener('load', (response) => {
-                data = JSON.parse(request.responseText);
+
+            function createCharts(data) {
                 data.forEach((dataEntry, index) => {
                     let chartContainer = document.createElement('div');
                     chartContainer.classList.add('chart-container');
@@ -72,8 +69,24 @@
                     container.appendChild(chartContainer);
                     chart.chartdata = dataEntry;
                 });
-            });
-            request.send();
+            }
+
+            if (location.href.indexOf('file:///') > -1) {
+                let script = document.createElement('script');
+                script.addEventListener('load', () => {
+                    createCharts(CHART_DATA);
+                });
+                document.head.appendChild(script);
+                script.src = './chart_data.js';
+            } else {
+                let request = new XMLHttpRequest();
+                request.open('GET', './chart_data.json');
+                request.addEventListener('load', response => {
+                    let data = JSON.parse(request.responseText);
+                    createCharts(data);
+                });
+                request.send();
+            }
 
             container.addEventListener('click', onContainerClick);
 
