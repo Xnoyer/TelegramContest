@@ -42,8 +42,9 @@ class TgXAxis extends TgLayerBase {
         if (!this.points) {
             return false;
         }
-        if (coords.x < this._theme.spacing || coords.x > this._chart.plotArea.x + this._chart.plotArea.w || coords.y <
-            this._theme.spacing || coords.y > this._chart.plotArea.y + this._chart.plotArea.h) {
+        if (coords.x < this._theme.spacing || coords.x > this._chart.plotArea.x + this._chart.plotArea.w -
+            this._theme.spacing || coords.y < this._theme.spacing || coords.y > this._theme.spacing +
+            this._chart.plotArea.y + this._chart.plotArea.h) {
             if (this._hoveredPoint !== null) {
                 this._hoveredPoint = null;
                 this.redraw();
