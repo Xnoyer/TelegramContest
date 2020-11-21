@@ -278,8 +278,8 @@ class TgChart extends HTMLElement {
             `:host {
                 font-family: Roboto, Arial, sans-serif;
                 display: block;
-                width: 800;
-                height: 600;
+                width: 800px;
+                height: 600px;
                 position: relative;
             }`, 0);
         this._styleSheet.insertRule(
